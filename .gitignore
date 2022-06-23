@@ -1,5 +1,6 @@
 # CakePHP specific files #
 ##########################
+/config/Migrations/schema-dump-*.lock
 /config/app_local.php
 /config/.env
 /logs/*
