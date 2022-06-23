@@ -10,21 +10,6 @@ use Cake\Http\Response;
 class UsersController extends AppController
 {
     /**
-     * @inheritDoc
-     */
-    public function initialize()
-    {
-        parent::initialize();
-
-        $this->loadComponent('Auth', [
-            'loginAction' => [
-                'controller' => 'Users',
-                'action' => 'sign-in',
-            ],
-        ]);
-    }
-
-    /**
      * @return Response|null
      */
     public function signIn()

@@ -45,6 +45,12 @@ class AppController extends Controller
             'enableBeforeRedirect' => false,
         ]);
         $this->loadComponent('Flash');
+        $this->loadComponent('Auth', [
+            'loginAction' => [
+                'controller' => 'Users',
+                'action' => 'sign-in',
+            ],
+        ]);
 
         /*
          * Enable the following component for recommended CakePHP security settings.
