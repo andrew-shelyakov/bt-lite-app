@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Model\Table\UsersTable;
+use Cake\Event\Event;
 use Cake\Http\Response;
 
 /**
@@ -9,6 +10,14 @@ use Cake\Http\Response;
  */
 class UsersController extends AppController
 {
+    /**
+     * @inheritDoc
+     */
+    public function beforeRender(Event $event)
+    {
+        $this->viewBuilder()->setClassName('BsApp');
+    }
+
     /**
      * @return Response|null
      */
