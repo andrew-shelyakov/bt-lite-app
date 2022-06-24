@@ -72,6 +72,18 @@ Router::scope('/', function (RouteBuilder $routes) {
     $routes->connect('/sign-in', ['controller' => 'Users', 'action' => 'sign-in']);
     $routes->connect('/sign-out', ['controller' => 'Users', 'action' => 'sign-out']);
 
+    $routes->connect('/tasks', ['controller' => 'Tasks', 'action' => 'index']);
+    $routes->connect('/tasks/view/:id', ['controller' => 'Tasks', 'action' => 'view'])
+        ->setPatterns(['id' => '[1-9]\d*|0'])
+        ->setPass(['id']);
+    $routes->connect('/tasks/add', ['controller' => 'Tasks', 'action' => 'add']);
+    $routes->connect('/tasks/edit/:id', ['controller' => 'Tasks', 'action' => 'edit'])
+        ->setPatterns(['id' => '[1-9]\d*|0'])
+        ->setPass(['id']);
+    $routes->connect('/tasks/delete/:id', ['controller' => 'Tasks', 'action' => 'delete'])
+        ->setPatterns(['id' => '[1-9]\d*|0'])
+        ->setPass(['id']);
+
     /*
      * Connect catchall routes for all controllers.
      *
