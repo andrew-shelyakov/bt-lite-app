@@ -11,14 +11,6 @@ use Cake\Http\Response;
 class UsersController extends AppController
 {
     /**
-     * @inheritDoc
-     */
-    public function beforeRender(Event $event)
-    {
-        $this->viewBuilder()->setClassName('BsApp');
-    }
-
-    /**
      * @return Response|null
      */
     public function signIn()

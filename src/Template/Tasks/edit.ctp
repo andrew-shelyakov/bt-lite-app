@@ -2,7 +2,7 @@
 use App\Model\Entity\Task;
 
 /**
- * @var \App\View\BsAppView $this
+ * @var \App\View\AppView $this
  * @var Task $task
  * @var array $userOptions
  */

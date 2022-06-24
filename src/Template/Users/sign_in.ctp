@@ -1,6 +1,6 @@
 <?php
 /**
- * @var \App\View\BsAppView $this
+ * @var \App\View\AppView $this
  */
 ?>
 

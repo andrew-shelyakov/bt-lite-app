@@ -1,9 +1,10 @@
 <?php
 namespace App\View;
 
+use Cake\View\View;
 use BootstrapUI\View\UIViewTrait;
 
-class BsAppView extends AppView
+class AppView extends View
 {
     use UIViewTrait;
 

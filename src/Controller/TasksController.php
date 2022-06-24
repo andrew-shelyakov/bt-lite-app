@@ -38,14 +38,6 @@ class TasksController extends AppController
     }
 
     /**
-     * @inheritDoc
-     */
-    public function beforeRender(Event $event)
-    {
-        $this->viewBuilder()->setClassName('BsApp');
-    }
-
-    /**
      * @return Response
      */
     public function index()
