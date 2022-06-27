@@ -10,6 +10,7 @@ use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Crud\Controller\Component\CrudComponent;
 use Crud\Controller\ControllerTrait;
+use LogicException;
 
 /**
  * @property TasksTable $Tasks
@@ -90,7 +91,7 @@ class TasksController extends AppController
         $Crud->on('beforeSave', function(Event $event) {
             /** @var Task $task */
             $task = $event->getSubject()->entity;
-            $task->author_id = $this->Auth->user()['id'];
+            $task->author_id = $this->_getAuthUserId();
         });
 
         return $Crud->execute();
@@ -183,7 +184,7 @@ class TasksController extends AppController
      */
     protected function _canEdit($task)
     {
-        $userId = $this->Auth->user()['id'];
+        $userId = $this->_getAuthUserId();
 
         return ($task->author_id === $userId || $task->executor_id === $userId);
     }
@@ -194,7 +195,7 @@ class TasksController extends AppController
      */
     protected function _canDelete($task)
     {
-        return ($task->author_id === $this->Auth->user()['id']);
+        return ($task->author_id === $this->_getAuthUserId());
     }
 
     /**
@@ -210,5 +211,20 @@ class TasksController extends AppController
         }
 
         $this->set('userOptions', $userOptions);
+    }
+
+    /**
+     * @return int
+     * @throws LogicException
+     */
+    protected function _getAuthUserId()
+    {
+        $id = $this->Auth->user('id');
+
+        if ($id === null) {
+            throw new LogicException('Пользователь не авторизован, либо невозможно определить его id.');
+        }
+
+        return $id;
     }
 }
