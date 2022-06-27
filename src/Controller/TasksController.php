@@ -5,6 +5,7 @@ use App\Model\Entity\Task;
 use App\Model\Entity\User;
 use App\Model\Table\TasksTable;
 use Cake\Event\Event;
+use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
 use Crud\Controller\Component\CrudComponent;
@@ -94,8 +95,30 @@ class TasksController extends AppController
     {
         $Crud = $this->Crud;
 
+        $Crud->on('afterFind', function(Event $event) {
+            if (!$this->_canEdit($event->getSubject()->entity)) {
+                throw new ForbiddenException('Вы не можете редактировать задачу, так как не являетесь её автором или исполнителем.');
+            }
+        });
+
         $Crud->on('beforeRender', function(Event $event) {
             $this->_addUserOptionsVar();
+        });
+
+        return $Crud->execute();
+    }
+
+    /**
+     * @return Response
+     */
+    public function delete()
+    {
+        $Crud = $this->Crud;
+
+        $Crud->on('afterFind', function(Event $event) {
+            if (!$this->_canDelete($event->getSubject()->entity)) {
+                throw new ForbiddenException('Вы не можете удалить задачу, так как не являетесь её автором.');
+            }
         });
 
         return $Crud->execute();
@@ -144,6 +167,26 @@ class TasksController extends AppController
         $this->set('sortDirection', ($sortDirection ?? null));
 
         return $orderFields;
+    }
+
+    /**
+     * @param Task $task
+     * @return bool
+     */
+    protected function _canEdit($task)
+    {
+        $userId = $this->Auth->user()['id'];
+
+        return ($task->author_id === $userId || $task->executor_id === $userId);
+    }
+
+    /**
+     * @param Task $task
+     * @return bool
+     */
+    protected function _canDelete($task)
+    {
+        return ($task->author_id === $this->Auth->user()['id']);
     }
 
     /**
