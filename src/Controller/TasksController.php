@@ -65,6 +65,14 @@ class TasksController extends AppController
             $event->getSubject()->query->contain(['author', 'executor']);
         });
 
+        $Crud->on('beforeRender', function(Event $event) {
+            /** @var Task $task */
+            $task = $event->getSubject()->entity;
+
+            $this->set('canEdit', $this->_canEdit($task));
+            $this->set('canDelete', $this->_canDelete($task));
+        });
+
         return $Crud->execute();
     }
 

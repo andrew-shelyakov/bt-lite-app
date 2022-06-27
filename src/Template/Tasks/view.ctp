@@ -4,26 +4,33 @@ use App\Model\Entity\Task;
 /**
  * @var \App\View\AppView $this
  * @var Task $task
+ * @var bool $canEdit
+ * @var bool $canDelete
  */
 ?>
 <h1>Задача #<?= h($task->id) ?>
-    <?= $this->Html->link(
-        'Редактировать'/*$this->Html->icon('pencil')*/,
-        ['controller' => 'Tasks', 'action' => 'edit', 'id' => $task->id],
-        [
-            'class' => 'btn btn-primary btn-sm',
-            'escapeTitle' => false,
-        ],
-    ) ?>
-    <?= $this->Form->postLink(
-        'Удалить'/*$this->Html->icon('trash')*/,
-        ['controller' => 'Tasks', 'action' => 'delete', 'id' => $task->id],
-        [
-            'class' => 'btn btn-danger btn-sm',
-            'escapeTitle' => false,
-            'confirm' => 'Удалить задачу?',
-        ],
-    ) ?>
+    <?php if ($canEdit): ?>
+        <?= $this->Html->link(
+            'Редактировать'/*$this->Html->icon('pencil')*/,
+            ['controller' => 'Tasks', 'action' => 'edit', 'id' => $task->id],
+            [
+                'class' => 'btn btn-primary btn-sm',
+                'escapeTitle' => false,
+            ],
+        ) ?>
+    <?php endif ?>
+
+    <?php if ($canDelete): ?>
+        <?= $this->Form->postLink(
+            'Удалить'/*$this->Html->icon('trash')*/,
+            ['controller' => 'Tasks', 'action' => 'delete', 'id' => $task->id],
+            [
+                'class' => 'btn btn-danger btn-sm',
+                'escapeTitle' => false,
+                'confirm' => 'Удалить задачу?',
+            ],
+        ) ?>
+    <?php endif ?>
 </h1>
 
 <strong>Название:</strong><br/>
