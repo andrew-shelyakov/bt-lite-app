@@ -45,7 +45,9 @@ class TasksController extends AppController
         $Crud = $this->Crud;
 
         $Crud->on('beforePaginate', function(Event $event) {
-            $event->getSubject()->query->contain(['author', 'executor']);
+            $event->getSubject()->query
+                ->order($this->_parseSortParam(), true)
+                ->contain(['author', 'executor']);
         });
 
         return $Crud->execute();
@@ -97,6 +99,51 @@ class TasksController extends AppController
         });
 
         return $Crud->execute();
+    }
+
+    /**
+     * @return array
+     */
+    protected function _parseSortParam()
+    {
+        $sortParam = $this->getRequest()->getQuery('sort');
+        if ($sortParam !== null && is_string($sortParam)) {
+            if ($sortParam[0] === '-') {
+                $sortByColumn = substr($sortParam, 1);
+                $sortDirection = 'DESC';
+            }
+            else {
+                $sortByColumn = $sortParam;
+                $sortDirection = 'ASC';
+            }
+
+            $sortByRealColumn = ([
+                'id' => 'Tasks.id',
+                'type' => 'Tasks.type',
+                'title' => 'Tasks.title',
+                'status' => 'Tasks.status',
+                'author' => 'author.username',
+                'executor' => 'executor.username',
+                'created' => 'Tasks.created',
+                'modified' => 'Tasks.modified',
+            ][$sortByColumn] ?? null);
+
+            if ($sortByRealColumn !== null) {
+                $orderFields = [$sortByRealColumn => $sortDirection];
+            }
+        }
+
+        if (!isset($orderFields)) {
+            $sortByColumn = null;
+            $sortDirection = null;
+
+            $orderFields = ['Tasks.type' => 'ASC', 'Tasks.created' => 'DESC'];
+        }
+
+        $this->set('sortByColumn', ($sortByColumn ?? null));
+        $this->set('sortDirection', ($sortDirection ?? null));
+
+        return $orderFields;
     }
 
     /**
