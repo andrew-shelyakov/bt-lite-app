@@ -6,6 +6,9 @@ use App\Model\Entity\Task;
  * @var \Cake\ORM\ResultSet $tasks
  */
 ?>
+
+<?= $this->element('Header') ?>
+
 <h1>Список задач</h1>
 
 <table class="table table-striped">

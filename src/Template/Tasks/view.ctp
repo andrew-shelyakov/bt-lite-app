@@ -8,6 +8,9 @@ use App\Model\Entity\Task;
  * @var bool $canDelete
  */
 ?>
+
+<?= $this->element('Header') ?>
+
 <h1>Задача #<?= h($task->id) ?>
     <?php if ($canEdit): ?>
         <?= $this->Html->link(
