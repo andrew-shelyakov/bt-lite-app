@@ -7,38 +7,46 @@ use App\Model\Entity\Task;
  * @var array $userOptions
  */
 ?>
-<?= $this->Form->create($task) ?>
-    <?= $this->Form->control('type', [
-        'label' => 'Тип',
-        'type' => 'select',
-        'options' => Task::TYPE_TO_LABEL_MAP,
-    ]) ?>
+<?= $this->Form->create($task, [
+    'class' => 'row',
+]) ?>
+    <div class="col-md-5">
+        <?= $this->Form->control('type', [
+            'label' => 'Тип',
+            'type' => 'select',
+            'options' => Task::TYPE_TO_LABEL_MAP,
+        ]) ?>
 
-    <?= $this->Form->control('title', [
-        'label' => 'Название',
-    ]) ?>
+        <?= $this->Form->control('title', [
+            'label' => 'Название',
+        ]) ?>
 
-    <?= $this->Form->control('description', [
-        'label' => 'Описание',
-    ]) ?>
+        <?= $this->Form->control('description', [
+            'label' => 'Описание',
+        ]) ?>
+    </div>
 
-    <?= $this->Form->control('status', [
-        'label' => 'Статус',
-        'type' => 'select',
-        'options' => Task::STATUS_TO_LABEL_MAP,
-    ]) ?>
+    <div class="col-md-4">
+        <?= $this->Form->control('status', [
+            'label' => 'Статус',
+            'type' => 'select',
+            'options' => Task::STATUS_TO_LABEL_MAP,
+        ]) ?>
 
-    <hr/>
+        <?= $this->Form->control('executor_id', [
+            'label' => 'Исполнитель',
+            'type' => 'select',
+            'options' => ['' => 'Не задан'] + ($userOptions),
+        ]) ?>
 
-    <?= $this->Form->control('executor_id', [
-        'label' => 'Исполнитель',
-        'type' => 'select',
-        'options' => ['' => 'Не задан'] + ($userOptions),
-    ]) ?>
+        <?= $this->Form->control('executor_comment', [
+            'label' => 'Комментарий исполнителя',
+        ]) ?>
+    </div>
 
-    <?= $this->Form->control('executor_comment', [
-        'label' => 'Комментарий исполнителя',
-    ]) ?>
-
-    <?= $this->Form->button('Сохранить') ?>
+    <div class="col-md-3">
+        <?= $this->Form->button('Сохранить', [
+            'class' => 'btn-primary btn-lg btn-block',
+        ]) ?>
+    </div>
 <?= $this->Form->end() ?>

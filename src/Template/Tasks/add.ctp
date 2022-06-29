@@ -10,8 +10,8 @@ use App\Model\Entity\Task;
 
 <?= $this->element('Header') ?>
 
-<?= $this->Flash->render() ?>
+<div class="container-fluid py-3">
+    <h1>Добавление задачи</h1>
 
-<h1>Добавление задачи</h1>
-
-<?php require __DIR__.'/_touch_form.ctp' ?>
+    <?php require __DIR__.'/_touch_form.ctp' ?>
+</div>
