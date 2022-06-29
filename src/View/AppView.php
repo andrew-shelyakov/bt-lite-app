@@ -15,7 +15,7 @@ class AppView extends View
     {
         parent::initialize();
 
-        $this->initializeUI();
+        $this->initializeUI(['layout' => false]);
 
         $this->loadHelper('UserPanel');
     }
