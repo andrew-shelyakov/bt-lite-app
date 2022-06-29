@@ -1,8 +1,8 @@
 <?php
 namespace App\View;
 
-use Cake\View\View;
 use BootstrapUI\View\UIViewTrait;
+use Cake\View\View;
 
 class AppView extends View
 {

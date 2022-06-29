@@ -4,7 +4,6 @@ namespace App\View\Helper;
 use App\Model\Entity\User;
 use App\View\Cell\UserPanelCell;
 use Cake\View\Helper;
-use LogicException;
 
 class UserPanelHelper extends Helper
 {

@@ -1,8 +1,8 @@
 <?php
 namespace App\Test\Fixture;
 
-use Cake\TestSuite\Fixture\TestFixture;
 use Cake\Auth\DefaultPasswordHasher;
+use Cake\TestSuite\Fixture\TestFixture;
 
 class UsersFixture extends TestFixture
 {

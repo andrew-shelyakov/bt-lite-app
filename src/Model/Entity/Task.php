@@ -1,7 +1,6 @@
 <?php
 namespace App\Model\Entity;
 
-use App\Model\Entity\User;
 use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 

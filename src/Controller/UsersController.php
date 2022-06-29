@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use App\Model\Table\UsersTable;
-use Cake\Event\Event;
 use Cake\Http\Response;
 
 /**

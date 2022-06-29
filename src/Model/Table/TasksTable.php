@@ -1,13 +1,12 @@
 <?php
 namespace App\Model\Table;
 
+use App\Model\Entity\Task;
+use Cake\Datasource\EntityInterface;
+use Cake\ORM\Behavior\TimestampBehavior;
 use Cake\ORM\RulesChecker;
 use Cake\ORM\Table;
 use Cake\Validation\Validator;
-use Cake\ORM\Behavior\TimestampBehavior;
-use App\Model\Entity\Task;
-use Cake\Datasource\EntityInterface;
-use Cake\ORM\Association\BelongsTo;
 
 /**
  * Tasks Model

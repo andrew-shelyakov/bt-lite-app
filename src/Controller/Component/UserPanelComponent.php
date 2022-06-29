@@ -1,9 +1,9 @@
 <?php
 namespace App\Controller\Component;
 
+use App\Controller\AppController;
 use App\Model\Entity\User;
 use App\View\AppView;
-use App\Controller\AppController;
 use Cake\Controller\Component;
 use Cake\Event\Event;
 use Cake\ORM\TableRegistry;
