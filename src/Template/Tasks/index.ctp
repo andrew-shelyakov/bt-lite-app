@@ -9,6 +9,8 @@ use App\Model\Entity\Task;
 
 <?= $this->element('Header') ?>
 
+<?= $this->Flash->render() ?>
+
 <h1>Список задач</h1>
 
 <table class="table table-striped">

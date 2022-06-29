@@ -11,6 +11,8 @@ use App\Model\Entity\Task;
 
 <?= $this->element('Header') ?>
 
+<?= $this->Flash->render() ?>
+
 <h1>Задача #<?= h($task->id) ?>
     <?php if ($canEdit): ?>
         <?= $this->Html->link(

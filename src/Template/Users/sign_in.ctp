@@ -4,6 +4,8 @@
  */
 ?>
 
+<?= $this->Flash->render() ?>
+
 <h1>Вход в систему</h1>
 
 <?= $this->Form->create() ?>

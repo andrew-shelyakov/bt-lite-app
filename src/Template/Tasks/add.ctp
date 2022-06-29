@@ -10,6 +10,8 @@ use App\Model\Entity\Task;
 
 <?= $this->element('Header') ?>
 
+<?= $this->Flash->render() ?>
+
 <h1>Добавление задачи</h1>
 
 <?php require __DIR__.'/_touch_form.ctp' ?>
