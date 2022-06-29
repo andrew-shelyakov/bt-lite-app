@@ -16,5 +16,9 @@
                 ) ?>
             </li>
         </ul>
+
+        <span class="navbar-text my-n5">
+            <?= $this->UserPanel ?>
+        </span>
     </nav>
 </header>

@@ -48,6 +48,7 @@ class AppController extends Controller
                 'action' => 'sign-in',
             ],
         ]);
+        $this->loadComponent('UserPanel');
 
         /*
          * Enable the following component for recommended CakePHP security settings.
