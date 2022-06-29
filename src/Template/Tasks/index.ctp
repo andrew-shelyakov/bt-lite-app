@@ -4,7 +4,34 @@ use App\Model\Entity\Task;
 /**
  * @var \App\View\AppView $this
  * @var \Cake\ORM\ResultSet $tasks
+ * @var string|null $sortByColumn
+ * @var 'ASC'|'DESC'|null $sortDirection
  */
+
+$renderSortLink = function($column, $rawTitle) use ($sortByColumn, $sortDirection) {
+    if ($column === $sortByColumn) {
+        if ($sortDirection === 'ASC') {
+            $rawTitle .= ' &#9650;';
+            $sortParam = '-'.$column;
+        }
+        else {
+            $rawTitle .= ' &#9660;';
+            $sortParam = $column;
+        }
+    }
+    else {
+        $sortParam = $column;
+    }
+
+    return $this->Html->link(
+        $rawTitle,
+        ['action' => 'index', 'sort' => $sortParam],
+        [
+            'escapeTitle' => false,
+        ],
+    );
+};
+
 ?>
 
 <?= $this->element('Header') ?>
@@ -16,14 +43,14 @@ use App\Model\Entity\Task;
 <table class="table table-striped">
     <thead>
         <tr>
-            <th scope="col">#</th>
-            <th scope="col">Тип</th>
-            <th scope="col">Название</th>
-            <th scope="col">Автор</th>
-            <th scope="col">Исполнитель</th>
-            <th scope="col">Статус</th>
-            <th scope="col">Создана</th>
-            <th scope="col">Изменена</th>
+            <th scope="col"><?= $renderSortLink('id', '#') ?></th>
+            <th scope="col"><?= $renderSortLink('type', 'Тип') ?></th>
+            <th scope="col"><?= $renderSortLink('title', 'Название') ?></th>
+            <th scope="col"><?= $renderSortLink('author', 'Автор') ?></th>
+            <th scope="col"><?= $renderSortLink('executor', 'Исполнитель') ?></th>
+            <th scope="col"><?= $renderSortLink('status', 'Статус') ?></th>
+            <th scope="col"><?= $renderSortLink('created', 'Создана') ?></th>
+            <th scope="col"><?= $renderSortLink('modified', 'Изменена') ?></th>
             <th scope="col"><?= $this->Html->link(
                 'Добавить'/*$this->Html->icon('add')*/,
                 ['controller' => 'Tasks', 'action' => 'add'],
