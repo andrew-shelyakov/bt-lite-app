@@ -140,7 +140,7 @@ class TasksControllerTest extends IntegrationTestCase
             }
         }
 
-        return [$result[0]];
+        return $result;
     }
 
     /**
