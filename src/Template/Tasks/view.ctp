@@ -7,6 +7,9 @@ use App\Model\Entity\Task;
  * @var bool $canEdit
  * @var bool $canDelete
  */
+
+$title = 'Задача #'.$task->id;
+$this->assign('title', $title);
 ?>
 
 <?= $this->element('Header') ?>
@@ -14,7 +17,7 @@ use App\Model\Entity\Task;
 <div class="container-fluid py-3">
     <?= $this->Flash->render() ?>
 
-    <h1>Задача #<?= h($task->id) ?></h1>
+    <h1><?= h($title) ?></h1>
 
     <div class="row">
         <div class="col-md-5">

@@ -2,6 +2,9 @@
 /**
  * @var \App\View\AppView $this
  */
+
+$title = 'Вход в систему';
+$this->assign('title', $title);
 ?>
 
 <div class="container pt-5 pb-3">
@@ -9,7 +12,7 @@
         <div class="col-md-6">
             <?= $this->Flash->render() ?>
 
-            <h1>Вход в систему</h1>
+            <h1><?= h($title) ?></h1>
 
             <?= $this->Form->create() ?>
                 <?= $this->Form->control('username', [

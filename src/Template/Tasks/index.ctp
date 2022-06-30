@@ -8,6 +8,9 @@ use App\Model\Entity\Task;
  * @var 'ASC'|'DESC'|null $sortDirection
  */
 
+$title = 'Список задач';
+$this->assign('title', $title);
+
 $renderSortLink = function($column, $rawTitle) use ($sortByColumn, $sortDirection) {
     if ($column === $sortByColumn) {
         if ($sortDirection === 'ASC') {
@@ -39,7 +42,7 @@ $renderSortLink = function($column, $rawTitle) use ($sortByColumn, $sortDirectio
 <div class="container-fluid py-3">
     <?= $this->Flash->render() ?>
 
-    <h1>Список задач</h1>
+    <h1><?= h($title) ?></h1>
 
     <div class="table-responsive">
         <table class="table table-striped">
