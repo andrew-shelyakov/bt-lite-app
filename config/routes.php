@@ -57,7 +57,9 @@ Router::scope('/', function (RouteBuilder $routes) {
      */
     $routes->applyMiddleware('csrf');
 
-    $routes->connect('/', ['controller' => 'Redirect', 'action' => 'index']);
+    $routes->redirect('/', ['controller' => 'Tasks', 'action' => 'index'], [
+        'status' => 302,
+    ]);
 
     $routes->connect('/sign-in', ['controller' => 'Users', 'action' => 'sign-in']);
     $routes->connect('/sign-out', ['controller' => 'Users', 'action' => 'sign-out']);
