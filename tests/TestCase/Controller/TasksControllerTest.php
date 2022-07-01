@@ -1,6 +1,7 @@
 <?php
 namespace App\Test\TestCase\Controller;
 
+use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
 use Cake\TestSuite\IntegrationTestCase;
 
@@ -44,25 +45,22 @@ class TasksControllerTest extends IntegrationTestCase
 
     /**
      * @param int $userId
-     * @param string $taskType
-     * @param string $taskStatus
+     * @param array $data
+     * @param array $condition
      * @return void
-     * @dataProvider _varyAddTaskTripletsProvider
+     * @dataProvider _addTaskProvider
      */
-    public function testAnyUserCanAddTaskWithVaryTypesAndStatusesAndWillBeSetAsItsAuthor($userId, $taskType, $taskStatus)
+    public function testUserCanAddTaskAndItWillBeAddedCorrectly($userId, $data, $condition)
     {
-        $taskData = $this->_createUniqueTaskFormData($taskType, $taskStatus);
-        $queryCondition = $this->_convertDataToCondition('Tasks', ([
-            'author_id' => $userId,
-        ] + $taskData));
-
         $this->_authorizedAs($userId);
         $this->enableCsrfToken();
 
-        $this->post('/tasks/add', $taskData);
+        $this->post('/tasks/add', $data);
 
         $this->assertRedirect();
-        $this->assertCount(1, $this->_queryTasksInDbByCondition($queryCondition));
+        $this->assertCount(1, $this->_loadModel('Tasks')->find('all', [
+            'conditions' => $condition,
+        ]));
     }
 
     /**
@@ -103,6 +101,76 @@ class TasksControllerTest extends IntegrationTestCase
             ['/tasks/view/2', 1, 'Задача #2'],
             ['/tasks/edit/1', 1, 'Редактирование задачи #1'],
             ['/tasks/edit/2', 1, 'Редактирование задачи #2'],
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function _addTaskProvider()
+    {
+        return [
+            'Simple case' => [
+                $userId = 1,
+                $data = [
+                    'type' => 'critical_bug',
+                    'title' => 'Задача [162be7cc6690bd]',
+                    'description' => 'Описание для "Задача [162be7cc6690bd]"',
+                    'status' => 'created',
+                    'executor_id' => null,
+                    'executor_comment' => '',
+                ],
+                $condition = [
+                    'author_id' => 1,
+                    'type' => 'critical_bug',
+                    'title' => 'Задача [162be7cc6690bd]',
+                    'description' => 'Описание для "Задача [162be7cc6690bd]"',
+                    'status' => 'created',
+                    'executor_id IS' => null,
+                    'executor_comment' => '',
+                ],
+            ],
+            'Attempt to override `author_id`' => [
+                $userId = 2,
+                $data = [
+                    'author_id' => 3,
+                    'type' => 'regular_bug',
+                    'title' => 'Задача [162be7ccad24e5]',
+                    'description' => 'Описание для "Задача [162be7ccad24e5]"',
+                    'status' => 'executing',
+                    'executor_id' => null,
+                    'executor_comment' => '',
+                ],
+                $condition = [
+                    'author_id' => 2,
+                    'type' => 'regular_bug',
+                    'title' => 'Задача [162be7ccad24e5]',
+                    'description' => 'Описание для "Задача [162be7ccad24e5]"',
+                    'status' => 'executing',
+                    'executor_id IS' => null,
+                    'executor_comment' => '',
+                ],
+            ],
+            'When `executor_id` is set' => [
+                $userId = 3,
+                $data = [
+                    'type' => 'enhancement',
+                    'title' => 'Задача [162be7ceabc7b6]',
+                    'description' => 'Описание для "Задача [162be7ceabc7b6]"',
+                    'status' => 'canceled',
+                    'executor_id' => 2,
+                    'executor_comment' => '',
+                ],
+                $condition = [
+                    'author_id' => 3,
+                    'type' => 'enhancement',
+                    'title' => 'Задача [162be7ceabc7b6]',
+                    'description' => 'Описание для "Задача [162be7ceabc7b6]"',
+                    'status' => 'canceled',
+                    'executor_id' => 2,
+                    'executor_comment' => '',
+                ],
+            ],
         ];
     }
 
@@ -150,6 +218,15 @@ class TasksControllerTest extends IntegrationTestCase
     protected function _authorizedAs($userId)
     {
         $this->session(['Auth.User.id' => $userId]);
+    }
+
+    /**
+     * @param string $alias
+     * @return Table
+     */
+    protected function _loadModel($alias)
+    {
+        return TableRegistry::getTableLocator()->get($alias);
     }
 
     /**
