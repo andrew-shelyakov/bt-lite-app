@@ -3,132 +3,123 @@ namespace App\Controller;
 
 use App\Model\Entity\Task;
 use App\Model\Table\TasksTable;
-use Cake\Event\Event;
 use Cake\Http\Exception\ForbiddenException;
+use Cake\Http\Exception\InternalErrorException;
+use Cake\Http\Exception\MethodNotAllowedException;
 use Cake\Http\Response;
-use Crud\Controller\Component\CrudComponent;
-use Crud\Controller\ControllerTrait;
 use LogicException;
 
 /**
  * @property TasksTable $Tasks
- * @property CrudComponent $Crud
  */
 class TasksController extends AppController
 {
-    use ControllerTrait;
-
     /**
-     * @inheritDoc
-     */
-    public function initialize()
-    {
-        parent::initialize();
-
-        $this->loadComponent('Crud', [
-            'className' => CrudComponent::class,
-            'actions' => [
-                'Crud.Index',
-                'Crud.Add',
-                'Crud.Edit',
-                'Crud.View',
-                'Crud.Delete',
-            ],
-        ]);
-    }
-
-    /**
-     * @return Response
+     * @return void
      */
     public function index()
     {
-        $Crud = $this->Crud;
+        $query = $this->Tasks->find()
+            ->order($this->_parseSortParam(), true)
+            ->contain(['author', 'executor']);
+        $tasks = $this->paginate($query);
 
-        $Crud->on('beforePaginate', function(Event $event) {
-            $event->getSubject()->query
-                ->order($this->_parseSortParam(), true)
-                ->contain(['author', 'executor']);
-        });
-
-        return $Crud->execute();
+        $this->set('tasks', $tasks);
     }
 
     /**
-     * @return Response
+     * @param string $id
+     * @return void
      */
-    public function view()
+    public function view($id)
     {
-        $Crud = $this->Crud;
+        $task = $this->Tasks->get($id, [
+            'contain' => ['author', 'executor'],
+        ]);
 
-        $Crud->on('beforeFind', function(Event $event) {
-            $event->getSubject()->query->contain(['author', 'executor']);
-        });
-
-        $Crud->on('beforeRender', function(Event $event) {
-            /** @var Task $task */
-            $task = $event->getSubject()->entity;
-
-            $this->set('canEdit', $this->_canEdit($task));
-            $this->set('canDelete', $this->_canDelete($task));
-        });
-
-        return $Crud->execute();
+        $this->set('task', $task);
+        $this->set('canEdit', $this->_canEdit($task));
+        $this->set('canDelete', $this->_canDelete($task));
     }
 
     /**
-     * @return Response
+     * @return Response|void
      */
     public function add()
     {
-        $Crud = $this->Crud;
+        $model = $this->Tasks;
+        $task = $model->newEntity();
 
-        $Crud->on('beforeRender', function(Event $event) {
-            $this->_addUserOptionsVar();
-        });
-
-        $Crud->on('beforeSave', function(Event $event) {
-            /** @var Task $task */
-            $task = $event->getSubject()->entity;
+        if ($this->request->is('post')) {
+            $model->patchEntity($task, $this->request->getData());
             $task->author_id = $this->_getAuthUserId();
-        });
 
-        return $Crud->execute();
+            if ($model->save($task)) {
+                $this->Flash->success('Задача успешно добавлена.');
+
+                return $this->redirect(['action' => 'index']);
+            }
+        }
+
+        $this->set('task', $task);
+        $this->_addUserOptionsVar();
     }
 
     /**
-     * @return Response
+     * @param string $id
+     * @return Response|void
+     * @throws ForbiddenException
      */
-    public function edit()
+    public function edit($id)
     {
-        $Crud = $this->Crud;
+        $model = $this->Tasks;
+        $task = $model->get($id);
 
-        $Crud->on('afterFind', function(Event $event) {
-            if (!$this->_canEdit($event->getSubject()->entity)) {
-                throw new ForbiddenException('Вы не можете редактировать задачу, так как не являетесь её автором или исполнителем.');
+        if (!$this->_canEdit($task)) {
+            throw new ForbiddenException('Вы не можете редактировать задачу, так как не являетесь её автором или исполнителем.');
+        }
+
+        if ($this->request->is('put')) {
+            $model->patchEntity($task, $this->request->getData());
+
+            if ($model->save($task)) {
+                $this->Flash->success('Задача успешно отредактирована.');
+
+                return $this->redirect(['action' => 'index']);
             }
-        });
+        }
 
-        $Crud->on('beforeRender', function(Event $event) {
-            $this->_addUserOptionsVar();
-        });
-
-        return $Crud->execute();
+        $this->set('task', $task);
+        $this->_addUserOptionsVar();
     }
 
     /**
+     * @param string $id
      * @return Response
+     * @throws MethodNotAllowedException
+     * @throws ForbiddenException
+     * @throws InternalErrorException
      */
-    public function delete()
+    public function delete($id)
     {
-        $Crud = $this->Crud;
+        if (!$this->request->is('post')) {
+            throw new MethodNotAllowedException();
+        }
 
-        $Crud->on('afterFind', function(Event $event) {
-            if (!$this->_canDelete($event->getSubject()->entity)) {
-                throw new ForbiddenException('Вы не можете удалить задачу, так как не являетесь её автором.');
-            }
-        });
+        $model = $this->Tasks;
+        $task = $model->get($id);
 
-        return $Crud->execute();
+        if (!$this->_canDelete($task)) {
+            throw new ForbiddenException('Вы не можете удалить задачу, так как не являетесь её автором.');
+        }
+
+        if (!$model->delete($task)) {
+            throw new InternalErrorException('Не удалось удалить задачу.');
+        }
+
+        $this->Flash->success('Задача успешно удалена.');
+
+        return $this->redirect(['action' => 'index']);
     }
 
     /**
