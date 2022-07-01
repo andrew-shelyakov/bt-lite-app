@@ -175,43 +175,6 @@ class TasksControllerTest extends IntegrationTestCase
     }
 
     /**
-     * @return array
-     */
-    public function _varyAddTaskTripletsProvider()
-    {
-        $userIds = [
-            1,
-            1,
-            1,
-        ];
-
-        $types = [
-            'critical_bug',
-            'regular_bug',
-            'enhancement',
-        ];
-
-        $statuses = [
-            'created',
-            'executing',
-            'completed',
-            'canceled',
-        ];
-
-        $result = [];
-
-        foreach ($userIds as $userId) {
-            foreach ($types as $type) {
-                foreach ($statuses as $status) {
-                    $result[] = [$userId, $type, $status];
-                }
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * @param int $userId
      * @return void
      */
@@ -227,60 +190,5 @@ class TasksControllerTest extends IntegrationTestCase
     protected function _loadModel($alias)
     {
         return TableRegistry::getTableLocator()->get($alias);
-    }
-
-    /**
-     * @param string $type
-     * @param string $status
-     * @param int|null $executorId
-     * @param string $executorComment
-     * @return array
-     */
-    protected function _createUniqueTaskFormData($type, $status, $executorId = null, $executorComment = '')
-    {
-        $title = 'Задача ['.uniqid(true).']';
-        $description = 'Описание для "'.$title.'"';
-
-        return [
-            'type' => $type,
-            'title' => $title,
-            'description' => $description,
-            'status' => $status,
-            'executor_id' => $executorId,
-            'executor_comment' => $executorComment,
-        ];
-    }
-
-    /**
-     * @param string $table
-     * @param array $data
-     * @return array
-     */
-    protected function _convertDataToCondition($table, $data)
-    {
-        $result = [];
-
-        foreach ($data as $key => $value) {
-            $column = $table.'.'.$key;
-
-            $result[] = (($value === null)
-                ? [($column.' IS') => null]
-                : [$column => $value]
-            );
-        }
-
-        return $result;
-    }
-
-    /**
-     * @param array $condition
-     * @return int
-     */
-    protected function _queryTasksInDbByCondition($condition)
-    {
-        return TableRegistry::getTableLocator()
-            ->get('Tasks')
-            ->find()
-            ->where($condition);
     }
 }
