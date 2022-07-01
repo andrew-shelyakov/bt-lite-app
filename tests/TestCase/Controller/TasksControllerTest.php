@@ -3,6 +3,7 @@ namespace App\Test\TestCase\Controller;
 
 use Cake\ORM\Table;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
 use Cake\TestSuite\IntegrationTestCase;
 
 /**
@@ -13,7 +14,7 @@ class TasksControllerTest extends IntegrationTestCase
     public $fixtures = ['app.Users', 'app.Tasks'];
 
     /**
-     * @param string $location
+     * @param string|array $location
      * @param int $userId
      * @param string $contains
      * @return void
@@ -23,11 +24,12 @@ class TasksControllerTest extends IntegrationTestCase
     {
         $this->get($location);
 
-        $this->assertRedirect(['controller' => 'Users', 'action' => 'sign-in', 'redirect' => $location]);
+        $redirect = Router::url($location, ['_full' => true]);
+        $this->assertRedirect(['controller' => 'Users', 'action' => 'sign-in', 'redirect' => $redirect]);
     }
 
     /**
-     * @param string $location
+     * @param string|array $location
      * @param int $userId
      * @param string $contains
      * @return void
@@ -55,7 +57,7 @@ class TasksControllerTest extends IntegrationTestCase
         $this->_authorizedAs($userId);
         $this->enableCsrfToken();
 
-        $this->post('/tasks/add', $data);
+        $this->post(['controller' => 'Tasks', 'action' => 'add'], $data);
 
         $this->assertRedirect();
         $this->assertCount(1, $this->_loadModel('Tasks')->find('all', [
@@ -70,7 +72,7 @@ class TasksControllerTest extends IntegrationTestCase
     {
         $this->_authorizedAs(1);
 
-        $this->post('/tasks/add');
+        $this->post(['controller' => 'Tasks', 'action' => 'add']);
 
         $this->assertResponseCode(403);
         $this->assertResponseContains('CSRF');
@@ -83,7 +85,7 @@ class TasksControllerTest extends IntegrationTestCase
     {
         $this->_authorizedAs(1);
 
-        $this->post('/tasks/edit/1');
+        $this->post(['controller' => 'Tasks', 'action' => 'add', 'id' => 1]);
 
         $this->assertResponseCode(403);
         $this->assertResponseContains('CSRF');
@@ -95,12 +97,12 @@ class TasksControllerTest extends IntegrationTestCase
     public function _simpleLocationChecksProvider()
     {
         return [
-            ['/tasks', 1, 'Список задач'],
-            ['/tasks/add', 1, 'Добавление задачи'],
-            ['/tasks/view/1', 1, 'Задача #1'],
-            ['/tasks/view/2', 1, 'Задача #2'],
-            ['/tasks/edit/1', 1, 'Редактирование задачи #1'],
-            ['/tasks/edit/2', 1, 'Редактирование задачи #2'],
+            [['controller' => 'Tasks', 'action' => 'index'], 1, 'Список задач'],
+            [['controller' => 'Tasks', 'action' => 'add'], 1, 'Добавление задачи'],
+            [['controller' => 'Tasks', 'action' => 'view', 'id' => 1], 1, 'Задача #1'],
+            [['controller' => 'Tasks', 'action' => 'view', 'id' => 2], 1, 'Задача #2'],
+            [['controller' => 'Tasks', 'action' => 'edit', 'id' => 1], 1, 'Редактирование задачи #1'],
+            [['controller' => 'Tasks', 'action' => 'edit', 'id' => 2], 1, 'Редактирование задачи #2'],
         ];
     }
 
