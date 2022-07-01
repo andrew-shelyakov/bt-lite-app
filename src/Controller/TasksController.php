@@ -15,14 +15,29 @@ use LogicException;
 class TasksController extends AppController
 {
     /**
+     * @inheritDoc
+     */
+    public $paginate = [
+        'contain' => ['author', 'executor'],
+        'sortWhitelist' => [
+            'id',
+            'type',
+            'title',
+            'status',
+            'author.username',
+            'executor.username',
+            'created',
+            'modified',
+        ],
+        'order' => ['type' => 'ASC', 'created' => 'DESC'],
+    ];
+
+    /**
      * @return void
      */
     public function index()
     {
-        $query = $this->Tasks->find()
-            ->order($this->_parseSortParam(), true)
-            ->contain(['author', 'executor']);
-        $tasks = $this->paginate($query);
+        $tasks = $this->paginate($this->Tasks);
 
         $this->set('tasks', $tasks);
     }
@@ -79,7 +94,7 @@ class TasksController extends AppController
             throw new ForbiddenException('Вы не можете редактировать задачу, так как не являетесь её автором или исполнителем.');
         }
 
-        if ($this->request->is('put')) {
+        if ($this->request->is('put') || $this->request->is('post')) {
             $model->patchEntity($task, $this->request->getData());
 
             if ($model->save($task)) {
@@ -102,7 +117,7 @@ class TasksController extends AppController
      */
     public function delete($id)
     {
-        if (!$this->request->is('post')) {
+        if (!($this->request->is('delete') || $this->request->is('post'))) {
             throw new MethodNotAllowedException();
         }
 
@@ -120,51 +135,6 @@ class TasksController extends AppController
         $this->Flash->success('Задача успешно удалена.');
 
         return $this->redirect(['action' => 'index']);
-    }
-
-    /**
-     * @return array
-     */
-    protected function _parseSortParam()
-    {
-        $sortParam = $this->getRequest()->getQuery('sort');
-        if ($sortParam !== null && is_string($sortParam)) {
-            if ($sortParam[0] === '-') {
-                $sortByColumn = substr($sortParam, 1);
-                $sortDirection = 'DESC';
-            }
-            else {
-                $sortByColumn = $sortParam;
-                $sortDirection = 'ASC';
-            }
-
-            $sortByRealColumn = ([
-                'id' => 'Tasks.id',
-                'type' => 'Tasks.type',
-                'title' => 'Tasks.title',
-                'status' => 'Tasks.status',
-                'author' => 'author.username',
-                'executor' => 'executor.username',
-                'created' => 'Tasks.created',
-                'modified' => 'Tasks.modified',
-            ][$sortByColumn] ?? null);
-
-            if ($sortByRealColumn !== null) {
-                $orderFields = [$sortByRealColumn => $sortDirection];
-            }
-        }
-
-        if (!isset($orderFields)) {
-            $sortByColumn = null;
-            $sortDirection = null;
-
-            $orderFields = ['Tasks.type' => 'ASC', 'Tasks.created' => 'DESC'];
-        }
-
-        $this->set('sortByColumn', ($sortByColumn ?? null));
-        $this->set('sortDirection', ($sortDirection ?? null));
-
-        return $orderFields;
     }
 
     /**

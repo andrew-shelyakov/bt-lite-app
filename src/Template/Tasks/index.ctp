@@ -4,35 +4,26 @@ use App\Model\Entity\Task;
 /**
  * @var \App\View\AppView $this
  * @var \Cake\ORM\ResultSet $tasks
- * @var string|null $sortByColumn
- * @var 'ASC'|'DESC'|null $sortDirection
  */
 
 $title = 'Список задач';
 $this->assign('title', $title);
 
-$renderSortLink = function($column, $rawTitle) use ($sortByColumn, $sortDirection) {
-    if ($column === $sortByColumn) {
-        if ($sortDirection === 'ASC') {
+$renderSortLink = function($key, $rawTitle, $options = []) {
+    $Paginator = $this->Paginator;
+
+    if ($key === $Paginator->sortKey()) {
+        if ($Paginator->sortDir() === 'asc') {
             $rawTitle .= ' &#9650;';
-            $sortParam = '-'.$column;
         }
         else {
             $rawTitle .= ' &#9660;';
-            $sortParam = $column;
         }
     }
-    else {
-        $sortParam = $column;
-    }
 
-    return $this->Html->link(
-        $rawTitle,
-        ['action' => 'index', 'sort' => $sortParam],
-        [
-            'escapeTitle' => false,
-        ],
-    );
+    return $Paginator->sort($key, $rawTitle, ([
+        'escape' => false,
+    ] + $options));
 };
 
 ?>
@@ -52,8 +43,8 @@ $renderSortLink = function($column, $rawTitle) use ($sortByColumn, $sortDirectio
                     <th scope="col"><?= $renderSortLink('type', h('Тип')) ?></th>
                     <th scope="col"><?= $renderSortLink('title', h('Название')) ?></th>
                     <th scope="col"><?= $renderSortLink('status', h('Статус')) ?></th>
-                    <th scope="col"><?= $renderSortLink('executor', h('Исполнитель')) ?></th>
-                    <th scope="col"><?= $renderSortLink('author', h('Автор')) ?></th>
+                    <th scope="col"><?= $renderSortLink('executor.username', h('Исполнитель')) ?></th>
+                    <th scope="col"><?= $renderSortLink('author.username', h('Автор')) ?></th>
                     <th scope="col"><?= $renderSortLink('created', h('Создана')) ?></th>
                     <th scope="col"><?= $renderSortLink('modified', h('Изменена')) ?></th>
                     <th scope="col" class="text-right"><?= $this->Html->link(
