@@ -5,8 +5,8 @@
  */
 
 if ($user === null) {
-    require __DIR__.'/_anonymous.ctp';
+    echo $this->element('UserPanel/anonymous');
 }
 else {
-    require __DIR__.'/_authorized.ctp';
+    echo $this->element('UserPanel/authorized');
 }
