@@ -5,8 +5,8 @@
  */
 
 if ($user === null) {
-    echo $this->element('UserPanel/anonymous');
+    echo $this->element('Cell/UserPanel/anonymous');
 }
 else {
-    echo $this->element('UserPanel/authorized');
+    echo $this->element('Cell/UserPanel/authorized');
 }
