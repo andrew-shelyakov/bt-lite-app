@@ -76,19 +76,19 @@ class UsersControllerTest extends IntegrationTestCase
                 [
                     'username' => '',
                     'password' => '',
-                ]
+                ],
             ],
             '`null` as values' => [
                 [
                     'username' => null,
                     'password' => null,
-                ]
+                ],
             ],
             'Invalid types' => [
                 [
                     'username' => [[123]],
                     'password' => [[456]],
-                ]
+                ],
             ],
             'Missing fields' => [
                 [
@@ -98,25 +98,25 @@ class UsersControllerTest extends IntegrationTestCase
                 [
                     'username' => 'mia',
                     'password' => '',
-                ]
+                ],
             ],
             '`null` as `password` while `username` valid' => [
                 [
                     'username' => 'mia',
                     'password' => null,
-                ]
+                ],
             ],
             'invalid `password` type while `username` valid' => [
                 [
                     'username' => 'mia',
                     'password' => [[null]],
-                ]
+                ],
             ],
             'wrong `password` type while `username` valid' => [
                 [
                     'username' => 'mia',
                     'password' => 'valid',
-                ]
+                ],
             ],
         ];
     }
