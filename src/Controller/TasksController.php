@@ -2,12 +2,10 @@
 namespace App\Controller;
 
 use App\Model\Entity\Task;
-use App\Model\Entity\User;
 use App\Model\Table\TasksTable;
 use Cake\Event\Event;
 use Cake\Http\Exception\ForbiddenException;
 use Cake\Http\Response;
-use Cake\ORM\TableRegistry;
 use Crud\Controller\Component\CrudComponent;
 use Crud\Controller\ControllerTrait;
 use LogicException;
@@ -203,12 +201,9 @@ class TasksController extends AppController
      */
     protected function _addUserOptionsVar()
     {
-        $userOptions = [];
-
-        foreach (TableRegistry::getTableLocator()->get('Users')->find() as $user) {
-            /** @var User $user */
-            $userOptions[$user->id] = $user->username;
-        }
+        $userOptions = $this->loadModel('Users')->find('list', [
+            'valueField' => 'username',
+        ])->toArray();
 
         $this->set('userOptions', $userOptions);
     }
