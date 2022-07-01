@@ -11,6 +11,9 @@ use Cake\TestSuite\IntegrationTestCase;
  */
 class TasksControllerTest extends IntegrationTestCase
 {
+    /**
+     * @inheritDoc
+     */
     public $fixtures = ['app.Users', 'app.Tasks'];
 
     /**
