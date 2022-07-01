@@ -16,5 +16,5 @@ $this->assign('title', $title);
 <div class="container-fluid py-3">
     <h1><?= h($title) ?></h1>
 
-    <?php require __DIR__.'/_touch_form.ctp' ?>
+    <?= $this->element('Tasks/touch_form') ?>
 </div>
