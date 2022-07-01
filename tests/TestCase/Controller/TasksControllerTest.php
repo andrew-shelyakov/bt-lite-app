@@ -13,12 +13,12 @@ class TasksControllerTest extends IntegrationTestCase
 
     /**
      * @param string $location
-     * @param string $username
+     * @param int $userId
      * @param string $contains
      * @return void
      * @dataProvider _simpleLocationChecksProvider
      */
-    public function testRedirectForUnathorized($location, $username, $contains)
+    public function testRedirectForUnathorized($location, $userId, $contains)
     {
         $this->get($location);
 
@@ -27,14 +27,14 @@ class TasksControllerTest extends IntegrationTestCase
 
     /**
      * @param string $location
-     * @param string $username
+     * @param int $userId
      * @param string $contains
      * @return void
      * @dataProvider _simpleLocationChecksProvider
      */
-    public function testLocationAreOkForAuthorized($location, $username, $contains)
+    public function testLocationAreOkForAuthorized($location, $userId, $contains)
     {
-        $this->_authorizedAs($username);
+        $this->_authorizedAs($userId);
 
         $this->get($location);
 
@@ -43,20 +43,20 @@ class TasksControllerTest extends IntegrationTestCase
     }
 
     /**
-     * @param string $username
+     * @param int $userId
      * @param string $taskType
      * @param string $taskStatus
      * @return void
      * @dataProvider _varyAddTaskTripletsProvider
      */
-    public function testAnyUserCanAddTaskWithVaryTypesAndStatusesAndWillBeSetAsItsAuthor($username, $taskType, $taskStatus)
+    public function testAnyUserCanAddTaskWithVaryTypesAndStatusesAndWillBeSetAsItsAuthor($userId, $taskType, $taskStatus)
     {
         $taskData = $this->_createUniqueTaskFormData($taskType, $taskStatus);
         $queryCondition = $this->_convertDataToCondition('Tasks', ([
-            'author_id' => $this->_resolveUserId($username),
+            'author_id' => $userId,
         ] + $taskData));
 
-        $this->_authorizedAs($username);
+        $this->_authorizedAs($userId);
         $this->enableCsrfToken();
 
         $this->post('/tasks/add', $taskData);
@@ -70,7 +70,7 @@ class TasksControllerTest extends IntegrationTestCase
      */
     public function testUserCantBypassCsrfProtectionOnTaskAdd()
     {
-        $this->_authorizedAs('bob');
+        $this->_authorizedAs(1);
 
         $this->post('/tasks/add');
 
@@ -83,7 +83,7 @@ class TasksControllerTest extends IntegrationTestCase
      */
     public function testUserCantBypassCsrfProtectionOnTaskEdit()
     {
-        $this->_authorizedAs('bob');
+        $this->_authorizedAs(1);
 
         $this->post('/tasks/edit/1');
 
@@ -97,12 +97,12 @@ class TasksControllerTest extends IntegrationTestCase
     public function _simpleLocationChecksProvider()
     {
         return [
-            ['/tasks', 'bob', 'Список задач'],
-            ['/tasks/add', 'bob', 'Добавление задачи'],
-            ['/tasks/view/1', 'bob', 'Задача #1'],
-            ['/tasks/view/2', 'bob', 'Задача #2'],
-            ['/tasks/edit/1', 'bob', 'Редактирование задачи #1'],
-            ['/tasks/edit/2', 'bob', 'Редактирование задачи #2'],
+            ['/tasks', 1, 'Список задач'],
+            ['/tasks/add', 1, 'Добавление задачи'],
+            ['/tasks/view/1', 1, 'Задача #1'],
+            ['/tasks/view/2', 1, 'Задача #2'],
+            ['/tasks/edit/1', 1, 'Редактирование задачи #1'],
+            ['/tasks/edit/2', 1, 'Редактирование задачи #2'],
         ];
     }
 
@@ -111,10 +111,10 @@ class TasksControllerTest extends IntegrationTestCase
      */
     public function _varyAddTaskTripletsProvider()
     {
-        $usernames = [
-            'bob',
-            'mia',
-            'tom',
+        $userIds = [
+            1,
+            1,
+            1,
         ];
 
         $types = [
@@ -132,10 +132,10 @@ class TasksControllerTest extends IntegrationTestCase
 
         $result = [];
 
-        foreach ($usernames as $username) {
+        foreach ($userIds as $userId) {
             foreach ($types as $type) {
                 foreach ($statuses as $status) {
-                    $result[] = [$username, $type, $status];
+                    $result[] = [$userId, $type, $status];
                 }
             }
         }
@@ -144,25 +144,12 @@ class TasksControllerTest extends IntegrationTestCase
     }
 
     /**
-     * @param string $username
+     * @param int $userId
      * @return void
      */
-    protected function _authorizedAs($username)
+    protected function _authorizedAs($userId)
     {
-        $this->session(['Auth.User.id' => $this->_resolveUserId($username)]);
-    }
-
-    /**
-     * @param string $username
-     * @return int
-     */
-    protected function _resolveUserId($username)
-    {
-        return [
-            'bob' => 1,
-            'mia' => 2,
-            'tom' => 3,
-        ][$username];
+        $this->session(['Auth.User.id' => $userId]);
     }
 
     /**
