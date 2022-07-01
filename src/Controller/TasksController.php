@@ -72,7 +72,7 @@ class TasksController extends AppController
             if ($model->save($task)) {
                 $this->Flash->success('Задача успешно добавлена.');
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', 'id' => $task->id]);
             }
         }
 
@@ -100,7 +100,7 @@ class TasksController extends AppController
             if ($model->save($task)) {
                 $this->Flash->success('Задача успешно отредактирована.');
 
-                return $this->redirect(['action' => 'index']);
+                return $this->redirect(['action' => 'view', 'id' => $task->id]);
             }
         }
 
